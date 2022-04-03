@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 const ThoughtForm = () => {
   const [formState, setFormState] = useState({
@@ -6,6 +6,45 @@ const ThoughtForm = () => {
     thought: "",
   });
   const [characterCount, setCharacterCount] = useState(0);
+  const [disable, setDisable] = useState(false);
+
+  // Set the initial value of fileInput, the reference to the DOM element <input type="file">, to null
+  const fileInput = useRef(null);
+
+  // Upload image file
+  const handleImageUpload = (event) => {
+    event.preventDefault();
+
+    // Disable the submit thought button
+    setDisable(true);
+
+    const data = new FormData();
+    data.append('image', fileInput.current.files[0]);
+
+    // Send image file to endpoint with the postImage function
+    const postImage = async () => {
+      try {
+        const res = await fetch('/api/image-upload', {
+          mode: 'cors',
+          method: 'POST',
+          body: data,
+        });
+        if (!res.ok) throw new Error(res.statusText);
+        const postResponse = await res.json();
+        setFormState({ ...formState, image: postResponse.Location });
+        console.log('postImage: ', postResponse.Location);
+
+        // Re-enable the button after the image is successfully loaded
+        setDisable(false);
+
+        return postResponse.Location;
+      } catch (error) {
+        console.log(error);
+        setDisable(false);
+      }
+    };
+    postImage();
+  };
 
   // update state based on form input changes
   const handleChange = (event) => {
@@ -36,6 +75,7 @@ const ThoughtForm = () => {
     // clear form value
     setFormState({ username: "", thought: "" });
     setCharacterCount(0);
+    fileInput.current.value = "";
   };
 
   return (
@@ -62,7 +102,14 @@ const ThoughtForm = () => {
           className="form-input col-12 "
           onChange={handleChange}
         ></textarea>
-        <button className="btn col-12 " type="submit">
+        <label className="form-input col-12 p-1">
+          Add an image to your thought:
+          <input type="file" ref={fileInput} className="form-input p-2" />
+          <button className="btn" onClick={handleImageUpload} type="submit">
+            Upload
+          </button>
+        </label>
+        <button className="btn col-12 " disabled={disable} type="submit">
           Submit
         </button>
       </form>
