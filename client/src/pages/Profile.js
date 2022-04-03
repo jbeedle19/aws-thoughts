@@ -17,9 +17,6 @@ const Profile = props => {
       try {
         const res = await fetch(`/api/users/${userParam}`);
         const data = await res.json();
-        data.forEach((item) => {
-          item.username = userParam;
-        });
         setThoughts([ ...data ]);
         setIsLoaded(true);
       } catch (error) {
