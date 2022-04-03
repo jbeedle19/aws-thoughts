@@ -18,6 +18,20 @@ const ThoughtForm = () => {
   // submit form
   const handleFormSubmit = (event) => {
     event.preventDefault();
+    // Send the new thought through the POST route
+    const postData = async () => {
+      const res = await fetch('api/users', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formState),
+      });
+      const data = await res.json();
+      console.log(data);
+    };
+    postData();
 
     // clear form value
     setFormState({ username: "", thought: "" });
@@ -30,6 +44,7 @@ const ThoughtForm = () => {
         Character Count: {characterCount}/280
       </p>
       <form
+        autoComplete="off"
         className="flex-row justify-center justify-space-between-md align-stretch"
         onSubmit={handleFormSubmit}
       >
