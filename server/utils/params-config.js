@@ -9,7 +9,7 @@ const params = (fileName) => {
     const fileType = myFile[myFile.length - 1];
 
     const imageParams = {
-        Bucket: process.env.S3_BUCKET,
+        Bucket: 'user-images-765febd7-0f96-4c3d-a533-8b2a7fa9158a',
         Key: `${uuidv4()}.${fileType}`,
         Body: fileName.buffer,
         ACL: 'public-read'
